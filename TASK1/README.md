@@ -23,6 +23,6 @@ You can find screenshots here ![User Signup Page](./user.png)
 ---
 
 ## 🚀 How to Run
-1. Open `Task 1.html` in your browser.  
+1. Open `Task 1.html` in your browser.[Open Task 1.html](./Task1.html)
 2. Sign up with test credentials.  
 3. View the registered users in the dashboard.
