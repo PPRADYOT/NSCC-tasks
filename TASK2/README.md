@@ -16,7 +16,9 @@ This task is a **Quiz Application** built with HTML, CSS, and JavaScript.
 ---
 
 ## 📸 Screenshots
-You can find screenshots inside the ![Quiz Page](./quiz.png) folder.  
+You can find screenshots here
+
+![Quiz Page](./quiz.png) folder.  
 
 ---
 
