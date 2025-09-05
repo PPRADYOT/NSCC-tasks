@@ -29,3 +29,6 @@ Screenshots for each task are available inside their respective task folders.
    - The source code
    - A `README.md` file with details
    - A `screenshots/` folder with preview images
+## Live Demo
+[Run Task 1](https://ppradyot.github.io/NSCC-tasks/TASK1/Task_1.html)
+[Run Task 2](https://ppradyot.github.io/NSCC-tasks/TASK2/Task_2.html)
