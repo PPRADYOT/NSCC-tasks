@@ -1,0 +1,13 @@
+# 🚀 NSCC Tech – Technical Domain Tasks  
+
+This repository contains my completed submissions for the **Technical Domain tasks**.  
+
+- **Task 1:** Signup Form with Validation & Dashboard  
+- **Task 2:** Interactive Quiz App  
+
+Each task is organized into its own folder with documentation, code, and deployment links.  
+
+---
+
+## 📂 Repository Structure  
+

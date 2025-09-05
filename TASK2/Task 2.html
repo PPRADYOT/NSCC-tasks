@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en" class="">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NERV Synchronization Test</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Configure Tailwind CSS to use the 'class' strategy for dark mode.
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --eva-bg-dark: #1a182d;
+            --eva-bg-light: #2c2a4f;
+            --eva-green: #9dff00;
+            --eva-red: #ff0000;
+            --eva-orange: #ff6f00;
+            --eva-text: #e0e0e0;
+            --font-main: 'Orbitron', sans-serif;
+            --font-mono: 'Share Tech Mono', monospace;
+        }
+
+        html.dark {
+            --eva-bg-dark: #000000;
+            --eva-bg-light: #111111;
+        }
+
+        body {
+            font-family: var(--font-mono);
+            background-color: var(--eva-bg-dark);
+            color: var(--eva-text);
+            /* Add a subtle scanline effect */
+            background-image: linear-gradient(rgba(255, 255, 255, 0.03) 50%, transparent 50%);
+            background-size: 100% 4px;
+        }
+        
+        .eva-container {
+            background-color: var(--eva-bg-light);
+            border: 2px solid var(--eva-green);
+            box-shadow: 0 0 15px var(--eva-green), inset 0 0 10px rgba(157, 255, 0, 0.3);
+            border-radius: 0; /* Sharp corners */
+        }
+        
+        .eva-title {
+            font-family: var(--font-main);
+            color: var(--eva-green);
+            text-shadow: 0 0 5px var(--eva-green);
+        }
+
+        .eva-button {
+            font-family: var(--font-mono);
+            background-color: transparent;
+            border: 2px solid var(--eva-orange);
+            color: var(--eva-orange);
+            transition: all 0.3s ease;
+            border-radius: 0;
+            padding: 10px 20px;
+            text-transform: uppercase;
+        }
+
+        .eva-button:hover, .eva-button:focus {
+            background-color: var(--eva-orange);
+            color: var(--eva-bg-dark);
+            box-shadow: 0 0 10px var(--eva-orange);
+        }
+
+        .eva-button-submit {
+             border-color: var(--eva-green);
+             color: var(--eva-green);
+        }
+
+         .eva-button-submit:hover, .eva-button-submit:focus {
+            background-color: var(--eva-green);
+            color: var(--eva-bg-dark);
+            box-shadow: 0 0 10px var(--eva-green);
+        }
+
+        .option {
+            font-family: var(--font-mono);
+            background-color: transparent;
+            border: 2px solid var(--eva-bg-dark);
+            color: var(--eva-text);
+            transition: all 0.3s ease;
+            text-align: left;
+            border-radius: 0;
+        }
+        .option:hover {
+             border-color: var(--eva-orange);
+             color: var(--eva-orange);
+        }
+        .option.selected {
+            background-color: var(--eva-orange);
+            color: var(--eva-bg-dark);
+            border-color: var(--eva-orange);
+        }
+        .option.correct {
+            background-color: var(--eva-green);
+            color: var(--eva-bg-dark);
+            border-color: var(--eva-green);
+        }
+        .option.incorrect {
+            background-color: var(--eva-red);
+            color: #ffffff;
+            border-color: var(--eva-red);
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
+            20%, 40%, 60%, 80% { transform: translateX(10px); }
+        }
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+    </style>
+    <script>
+        // Set theme on page load to avoid FOUC
+        if (localStorage.getItem('theme') === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div id="start-page" class="w-full max-w-2xl p-6 sm:p-8 text-center transition-all duration-300 eva-container">
+        <h1 class="text-3xl sm:text-4xl font-bold mb-4 eva-title">[ NERV // GLOBAL SYNCHRONIZATION TEST ]</h1>
+        <p class="text-gray-300 mb-8">// Accessing Geo-Political Database. Pilot proficiency evaluation protocol initiated. You will be presented with 5 randomized inquiries. Respond accurately.</p>
+        <button id="start-btn" class="w-full sm:w-auto eva-button">
+            Initiate Sync Test
+        </button>
+    </div>
+
+    <div id="quiz-container" class="relative w-full max-w-2xl p-6 sm:p-8 transition-all duration-300 hidden eva-container">
+        <button id="theme-toggle-btn" class="absolute top-2 right-2 p-2 text-gray-400 hover:text-white focus:outline-none">
+            <svg id="theme-toggle-dark-icon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+            <svg id="theme-toggle-light-icon" class="w-5 h-5 hidden" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 A4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm-.707 10.607a1 1 0 011.414 0l.707-.707a1 1 0 111.414 1.414l-.707.707a1 1 0 01-1.414 0zM3 11a1 1 0 100-2H2a1 1 0 100 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+        </button>
+        <h1 class="text-2xl sm:text-3xl font-bold text-center mb-6 eva-title">INQUIRY PROTOCOL ACTIVE</h1>
+        
+        <div id="quiz-content">
+            <!-- Questions will be injected here by JavaScript -->
+        </div>
+
+        <div id="result-container" class="text-center hidden mt-6">
+            <img id="asuka-image" src="https://placehold.co/150x150/E82D2E/FFFFFF?text=ASUKA" alt="Asuka Langley" class="mx-auto mb-4 rounded-full border-4" style="border-color: var(--eva-red);">
+            <h2 class="text-2xl font-bold mb-2 eva-title">// SYNC TEST COMPLETE</h2>
+            <p class="text-lg mb-4">
+                <span class="font-bold" style="color: var(--eva-red);">Asuka Langley says:</span> "Not bad... for a baka! Your final sync ratio is:"
+                <br>
+                <span id="score" class="font-bold text-2xl" style="color: var(--eva-green)">0</span> / <span id="total-questions" class="font-bold text-2xl">5</span>.
+            </p>
+            <button id="try-again-btn" class="w-full sm:w-auto eva-button">
+                Re-Sync
+            </button>
+        </div>
+
+        <div class="mt-8 flex justify-end">
+            <button id="submit-btn" class="w-full sm:w-auto eva-button eva-button-submit disabled:opacity-50 disabled:cursor-not-allowed">
+                Finalize Pattern
+            </button>
+        </div>
+         <div id="alert-message" class="mt-4 text-center font-medium hidden" style="color: var(--eva-red); text-shadow: 0 0 5px var(--eva-red);">
+            // ERROR: INCOMPLETE DATA PATTERN. RESPOND TO ALL INQUIRIES.
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const quizData = [
+                { question: "What is the capital of Japan?", options: ["Beijing", "Seoul", "Tokyo", "Bangkok"], answer: "Tokyo" },
+                { question: "What is the capital of Australia?", options: ["Sydney", "Melbourne", "Canberra", "Perth"], answer: "Canberra" },
+                { question: "What is the capital of Canada?", options: ["Toronto", "Vancouver", "Montreal", "Ottawa"], answer: "Ottawa" },
+                { question: "What is the capital of Brazil?", options: ["Rio de Janeiro", "São Paulo", "Salvador", "Brasília"], answer: "Brasília" },
+                { question: "What is the capital of Egypt?", options: ["Cairo", "Alexandria", "Giza", "Luxor"], answer: "Cairo" },
+                { question: "What is the capital of Nigeria?", options: ["Lagos", "Kano", "Abuja", "Ibadan"], answer: "Abuja" },
+                { question: "What is the capital of Argentina?", options: ["Santiago", "Buenos Aires", "Lima", "Bogotá"], answer: "Buenos Aires" }
+            ];
+
+            const startPage = document.getElementById('start-page');
+            const startBtn = document.getElementById('start-btn');
+            const quizContainer = document.getElementById('quiz-container');
+            const quizContent = document.getElementById('quiz-content');
+            const submitBtn = document.getElementById('submit-btn');
+            const resultContainer = document.getElementById('result-container');
+            const scoreEl = document.getElementById('score');
+            const totalQuestionsEl = document.getElementById('total-questions');
+            const tryAgainBtn = document.getElementById('try-again-btn');
+            const alertMessage = document.getElementById('alert-message');
+            
+            const themeToggleBtn = document.getElementById('theme-toggle-btn');
+            const themeToggleDarkIcon = document.getElementById('theme-toggle-dark-icon');
+            const themeToggleLightIcon = document.getElementById('theme-toggle-light-icon');
+
+            let currentQuestions = [];
+            let userAnswers = {};
+
+            // --- THEME TOGGLE LOGIC ---
+            const updateThemeIcon = () => {
+                if (document.documentElement.classList.contains('dark')) {
+                    themeToggleLightIcon.classList.remove('hidden');
+                    themeToggleDarkIcon.classList.add('hidden');
+                } else {
+                    themeToggleDarkIcon.classList.remove('hidden');
+                    themeToggleLightIcon.classList.add('hidden');
+                }
+            };
+            
+            themeToggleBtn.addEventListener('click', () => {
+                document.documentElement.classList.toggle('dark');
+                localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light');
+                updateThemeIcon();
+            });
+            updateThemeIcon();
+            
+            // --- QUIZ LOGIC ---
+
+            startBtn.addEventListener('click', () => {
+                startPage.classList.add('hidden');
+                quizContainer.classList.remove('hidden');
+                startQuiz();
+            });
+
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+                return array;
+            }
+
+            function startQuiz() {
+                userAnswers = {};
+                resultContainer.classList.add('hidden');
+                submitBtn.classList.remove('hidden');
+                submitBtn.disabled = false;
+                alertMessage.classList.add('hidden');
+                quizContent.innerHTML = '';
+                
+                const shuffledQuestions = shuffleArray([...quizData]);
+                currentQuestions = shuffledQuestions.slice(0, 5);
+                totalQuestionsEl.textContent = currentQuestions.length;
+
+                displayQuestions();
+            }
+
+            function displayQuestions() {
+                currentQuestions.forEach((q, index) => {
+                    const questionElement = document.createElement('div');
+                    questionElement.classList.add('mb-6', 'question-block');
+                    questionElement.setAttribute('data-question-index', index);
+
+                    const questionText = document.createElement('p');
+                    questionText.classList.add('text-lg', 'font-semibold', 'mb-4');
+                    questionText.textContent = `Q${index + 1}: ${q.question}`;
+                    questionElement.appendChild(questionText);
+
+                    const optionsContainer = document.createElement('div');
+                    optionsContainer.classList.add('grid', 'grid-cols-1', 'sm:grid-cols-2', 'gap-3');
+                    
+                    const shuffledOptions = shuffleArray([...q.options]);
+
+                    shuffledOptions.forEach(option => {
+                        const optionButton = document.createElement('button');
+                        optionButton.classList.add('option', 'p-3');
+                        optionButton.textContent = option;
+                        optionButton.onclick = () => selectOption(index, option, optionButton);
+                        optionsContainer.appendChild(optionButton);
+                    });
+
+                    questionElement.appendChild(optionsContainer);
+                    quizContent.appendChild(questionElement);
+                });
+            }
+
+            window.selectOption = (questionIndex, option, buttonElement) => {
+                userAnswers[questionIndex] = option;
+                
+                const parent = buttonElement.parentElement;
+                parent.querySelectorAll('.option').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                buttonElement.classList.add('selected');
+            }
+
+            function showResults() {
+                let score = 0;
+                const questionBlocks = quizContent.querySelectorAll('.question-block');
+
+                questionBlocks.forEach((block, index) => {
+                    const question = currentQuestions[index];
+                    const userAnswer = userAnswers[index];
+                    const options = block.querySelectorAll('.option');
+                    
+                    options.forEach(optionButton => {
+                        optionButton.disabled = true;
+                        optionButton.classList.remove('selected');
+                        const optionText = optionButton.textContent;
+                        
+                        if (optionText === question.answer) {
+                            optionButton.classList.add('correct');
+                        }
+
+                        if (userAnswer && userAnswer !== question.answer && optionText === userAnswer) {
+                            optionButton.classList.add('incorrect');
+                        }
+                    });
+
+                    if (userAnswer === question.answer) {
+                        score++;
+                    }
+                });
+
+                scoreEl.textContent = score;
+                resultContainer.classList.remove('hidden');
+                submitBtn.classList.add('hidden');
+            }
+
+            submitBtn.addEventListener('click', () => {
+                if (Object.keys(userAnswers).length < currentQuestions.length) {
+                    alertMessage.classList.remove('hidden');
+                    quizContainer.classList.add('shake');
+                    setTimeout(() => {
+                        alertMessage.classList.add('hidden');
+                        quizContainer.classList.remove('shake');
+                    }, 1500);
+                    return;
+                }
+                showResults();
+            });
+
+            tryAgainBtn.addEventListener('click', startQuiz);
+
+        });
+    </script>
+</body>
+</html>
+

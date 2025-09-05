@@ -1,0 +1,25 @@
+# 🔹 Task 1 – Signup Form with Validation & Dashboard  
+
+**Objective:** Build a small web application for user signup, validation, and dashboard view.  
+
+---
+
+## 📌 Features  
+
+- Username cannot be empty  
+- Email validated with regex  
+- Password must be at least 6 characters (hashed before storage)  
+- Stores user details in **localStorage**  
+- Dashboard displays all user details in a table (Username, Email, Password)  
+- **Brownie Subtask:** Delete button to remove user entries  
+
+---
+
+## ⚡ How to Run  
+
+```bash
+# open project folder
+cd Task-1-Signup-Dashboard
+
+# open in browser
+open index.html   # or double-click index.html
