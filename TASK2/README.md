@@ -23,6 +23,6 @@ You can find screenshots here
 ---
 
 ## 🚀 How to Run
-1. [Open Task_1.html](./Task_1.html) in your browser.  
+1. [Open Task_2.html](./Task_2.html) in your browser.  
 2. Start the quiz and select answers.  
 3. At the end, check your score!
